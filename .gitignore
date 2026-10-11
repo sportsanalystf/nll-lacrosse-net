@@ -1,0 +1,15 @@
+# source broadcast and working data (too large / not ours to redistribute in full)
+data/
+runs/
+datasets/
+logs/
+models/ball_rfdetr/
+*.mp3
+*.wav
+# python / os
+__pycache__/
+*.pyc
+*.bak*
+*.before_*
+.DS_Store
+.ipynb_checkpoints/

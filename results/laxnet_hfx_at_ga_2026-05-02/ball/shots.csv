@@ -1,0 +1,2 @@
+shot_id,t,period,team,shooter,track_id,result,release_speed_hps,heading_deg,catch_to_release_s,shooter_speed_fps,ball_px,goal_px,after_gain_s,transition
+21,185.25,2.0,HFX,HFX (unidentified),210006,goal,,,0.43,,"[523.2, 376.3]","[684.4, 526.1]",,False

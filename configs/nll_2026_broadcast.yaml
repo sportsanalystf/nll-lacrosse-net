@@ -1,0 +1,88 @@
+# Broadcast + arena configuration for NLL broadcasts with the 2025-26 scorebug
+# (top-left bar: NLL | AWAY logo ABBR (seed) SCORE | SCORE (seed) ABBR logo | PERIOD | CLOCK | SHOT CLOCK).
+# Pixel boxes are [x, y, w, h] at the reference resolution; they are rescaled for other resolutions.
+
+game:
+  away: HFX
+  home: GA
+  # Approximate jersey colours for this game (BGR-agnostic hex, sRGB). Used only to
+  # name the two colour clusters; clustering itself is unsupervised.
+  colors:
+    HFX: "#3a2f8c"   # purple/blue
+    GA:  "#ececec"   # white with gold trim
+  period_length_s: 900
+  shot_clock_s: 30
+
+scorebug:
+  ref_size: [1920, 1080]
+  crop: [40, 52, 940, 52]            # whole bar; what gets decoded for OCR
+  presence: [47, 55, 145, 44]        # static NLL logo block -> bug on/off
+  fields:
+    away_score: {box: [381, 58, 57, 40], kind: int}
+    home_score: {box: [449, 58, 52, 40], kind: int}
+    period:     {box: [690, 58, 76, 40], kind: period}
+    clock:      {box: [772, 58, 120, 40], kind: clock}
+    shot_clock: {box: [895, 58, 70, 40], kind: int}
+
+shots:
+  analysis_fps: 10
+  size: [256, 144]
+  cut_struct: 0.6              # 1-NCC between consecutive thumbnails for a hard cut
+  cut_threshold: 0.25          # histogram distance for a hard cut
+  soft_hist: 0.05              # dissolve: moderate colour jump ...
+  soft_struct: 0.3             # ... with moderate structural change
+  gradual_threshold: 0.6       # distance across a 1 s window for slow wipes
+  min_shot_s: 0.4
+  floor_hsv_low:  [35, 40, 25]  # turf green (OpenCV H 0-180)
+  floor_hsv_high: [90, 255, 200]
+  crease_hsv_low:  [100, 120, 60]
+  crease_hsv_high: [125, 255, 255]
+  live_floor_min: 0.25
+  bug_ncc_min: 0.75
+
+scoreboard:
+  ocr_fps: 2
+  upscale: 3
+  stable_samples: 3            # a score must be read this many times in a row to be accepted
+
+detect:
+  model: models/yolox_tiny.onnx  # yolox_s.onnx (input 640) is ~15x slower for little gain on wide shots
+  input: 416
+  conf: 0.30
+  nms: 0.45
+  fps: 3                      # sampled frames per second of live play
+  tiles: 2                    # 1 = whole frame; 2 = two overlapping square tiles (better recall on small players)
+  min_floor_frac: 0.30        # live shots below this floor fraction are close-ups; skipped
+
+floor:
+  # NLL rulebook: goals 12 ft from end boards, crease radius 9'3", restraining lines 42'6"
+  # from centre, centre face-off circle 11 ft. Floor size varies by arena (~190-200 x 85).
+  length_ft: 200
+  width_ft: 85
+  corner_radius_ft: 28
+  goal_from_end_ft: 12
+  crease_radius_ft: 9.25
+  restraining_from_center_ft: 42.5
+  faceoff_radius_ft: 11
+
+homography:
+  refs_dir: calibration/gas_south_arena
+  method: ptz                 # ptz = track the main camera's pan/tilt/zoom against floor lines; orb = feature matching
+  min_inliers: 30
+  orb_features: 3000
+  max_line_cost_px: 18       # reject a registration whose projected floor lines miss the image lines
+  refine: false               # per-frame chamfer polish; off by default (weak line cues can pull it off)
+
+audio:
+  sample_rate: 22050
+  hop_s: 0.1
+  baseline_window_s: 30
+  spike_z: 2.5
+  goal_rise: 1.0              # goal confirmation: 1 s-smoothed loudness rise (z) above the search window's median
+  min_spike_s: 1.0
+
+events:
+  goal_search_back_s: 15       # how far before the last old-score read a goal can be
+  min_possession_s: 2.0
+  preroll_s: 12
+  postroll_s: 6

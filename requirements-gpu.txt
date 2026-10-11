@@ -1,0 +1,5 @@
+# GPU (Rivanna): install torch + SAM 3 first (slurm/setup_env.sh does this), then these
+-r requirements.txt
+transformers>=4.45      # SigLIP for team embeddings
+umap-learn>=0.5
+rfdetr[train,loggers]   # ball detector (RF-DETR) with its training extras; brings supervision

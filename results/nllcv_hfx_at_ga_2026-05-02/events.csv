@@ -1,0 +1,32 @@
+t,broadcast_time,period,clock,game_s,shot_clock,away_score,home_score,event,team,x_ft,y_ft,attack_end,confidence,audio_confirmed,audio_z,note
+1.75,0:01.7,1.0,14:35,25.0,10.0,0.0,0.0,shot,HFX,-88.98,19.84,-1.0,medium,,,shot clock reset; shot with offensive rebound
+21.0,0:21.0,1.0,13:42,78.0,30.0,0.0,1.0,goal,GA,,,,medium,False,0.94,
+42.75,0:42.7,1.0,13:17,103.0,9.0,0.0,1.0,shot,HFX,-83.23,-14.79,-1.0,medium,,,shot clock reset; shot with offensive rebound
+53.75,0:53.7,1.0,12:20,160.0,10.0,0.0,1.0,shot,GA,,,,medium,,,shot clock reset; shot with offensive rebound
+66.4,1:06.4,1.0,11:46,194.0,30.0,0.0,2.0,goal,GA,,,,medium,False,0.8,
+66.4,1:06.4,1.0,11:46,194.0,30.0,1.0,1.0,goal,HFX,,,,medium,False,0.8,
+100.5,1:40.5,2.0,14:44,916.0,21.0,1.0,3.0,goal,GA,,,,medium,False,0.63,
+116.5,1:56.5,2.0,14:11,949.0,30.0,1.0,4.0,goal,GA,-69.14,-9.85,-1.0,medium,False,1.0,
+133.6,2:13.5,2.0,13:16,1004.0,11.0,2.0,3.0,goal,HFX,-79.98,5.38,-1.0,high,True,1.54,
+155.22,2:35.2,2.0,11:01,1139.0,19.0,2.0,4.0,possession_change,GA,,,,medium,,,from HFX (player positions)
+162.25,2:42.2,2.0,10:54,1146.0,12.0,2.0,4.0,shot,GA,,,,medium,,,shot clock reset; shot with offensive rebound
+169.75,2:49.7,2.0,10:31,1169.0,8.0,2.0,4.0,shot,HFX,,,,medium,,,shot clock reset; shot with offensive rebound
+177.2,2:57.1,2.0,10:23,1177.0,25.0,3.0,4.0,goal,HFX,,,,medium,False,0.67,earlier goal not shown on air
+177.2,2:57.1,2.0,10:23,1177.0,25.0,4.0,4.0,goal,HFX,,,,medium,False,0.67,
+187.0,3:07.0,2.0,2:25,1655.0,30.0,5.0,4.0,goal,HFX,,,,medium,False,0.52,earlier goal not shown on air
+187.0,3:07.0,2.0,2:25,1655.0,30.0,6.0,4.0,goal,HFX,,,,medium,False,0.52,
+204.22,3:24.2,3.0,14:07,1853.0,22.0,6.0,4.0,possession_change,GA,,,,medium,,,from HFX (player positions)
+213.0,3:33.0,3.0,13:59,1861.0,14.0,7.0,4.0,goal,HFX,,,,medium,False,0.93,earlier goal not shown on air
+213.0,3:33.0,3.0,13:59,1861.0,14.0,8.0,4.0,goal,HFX,,,,medium,False,0.93,earlier goal not shown on air
+213.0,3:33.0,3.0,13:59,1861.0,14.0,9.0,4.0,goal,HFX,,,,medium,False,0.93,
+213.0,3:33.0,3.0,13:59,1861.0,14.0,6.0,5.0,goal,GA,,,,medium,False,0.93,
+223.1,3:43.0,3.0,1:04,2636.0,30.0,9.0,6.0,goal,GA,,,,medium,False,0.79,
+238.75,3:58.7,4.0,14:11,2749.0,2.0,9.0,6.0,shot,GA,,,,medium,,,shot clock reset; shot with offensive rebound
+246.25,4:06.2,4.0,12:50,2830.0,10.0,9.0,6.0,shot,GA,-72.97,3.8,-1.0,medium,,,shot clock reset; shot with offensive rebound
+252.25,4:12.2,4.0,11:13,2927.0,17.0,9.0,6.0,shot,HFX,,,,medium,,,shot clock reset; shot with offensive rebound
+257.48,4:17.4,4.0,11:08,2932.0,26.0,9.0,6.0,possession_change,GA,,,,medium,,,from HFX (player positions)
+259.25,4:19.2,4.0,11:06,2934.0,24.0,9.0,6.0,shot,GA,,,,medium,,,shot clock reset; shot with offensive rebound
+271.5,4:31.5,4.0,9:22,3038.0,22.0,9.0,7.0,goal,GA,,,,medium,False,0.62,
+272.0,4:32.0,4.0,9:22,3038.0,22.0,11.0,6.0,goal,HFX,,,,medium,False,0.62,
+272.0,4:32.0,4.0,9:22,3038.0,22.0,10.0,6.0,goal,HFX,,,,medium,False,0.62,earlier goal not shown on air
+297.75,4:57.7,4.0,5:11,3289.0,23.0,11.0,7.0,shot,HFX,,,,medium,,,shot clock reset; shot with offensive rebound

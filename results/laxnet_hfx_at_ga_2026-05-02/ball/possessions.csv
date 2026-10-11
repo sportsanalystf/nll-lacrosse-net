@@ -1,0 +1,5 @@
+shot_id,t_start,t_end,seconds,team,player,track_id,goalie
+1,18.65,18.88,0.27,HFX,HFX #27 Romanchych,10006,False
+9,58.65,58.95,0.33,GA,GA #55 Cole,90001,False
+21,184.85,185.25,0.43,HFX,HFX (unidentified),210006,True
+23,219.35,219.75,0.43,GA,GA #15 Tarbell,230007,False

@@ -1,0 +1,134 @@
+# LacrosseNet configuration. Paths are relative to the repository root.
+
+nll:
+  root: "."                                      # the nllcv package (floor model, homographies, scoreboard)
+  run: "runs/nllcv/hfx_at_ga_2026-05-02"          # an nllcv run of the same video
+  config: null                                   # null = nllcv default config
+
+video: "data/HIGHLIGHTS GEORGIA SWARM 7 - HALIFAX THUNDERBIRDS 12 I 5.2.26_2160p.mp4"
+
+prep:
+  track_fps: 15              # frames per second given to the tracker (and of the rendered video; 30 = broadcast-smooth)
+  frame_width: 1280          # JPEG width handed to SAM 3 (it works at 1008 internally)
+  min_shot_s: 2.0            # skip live shots shorter than this
+  min_floor_frac: 0.30       # skip close-ups (floor fraction from nllcv shots.csv)
+
+track:
+  backend: sam3              # sam3 (GPU) | cpu (YOLOX detector + Kalman/IoU tracker; for dev and testing)
+  sam3:
+    version: sam3            # sam3 | sam3.1
+    prompts: ["lacrosse player", "referee"]   # one session per prompt; ids are kept apart
+    min_prob: 0.5
+  cpu:
+    detect_every: 1          # run the detector on every Nth prep frame
+    iou_match: 0.25
+    max_age_s: 1.0           # keep a lost track alive this long (Kalman coasting)
+  min_track_s: 1.0           # drop tracks shorter than this
+  min_on_floor: 0.5          # fraction of a track's frames with turf under the feet
+  crops_per_s: 2             # torso crops saved per track per second (teams + numbers)
+
+teams:
+  embedder: siglip           # siglip (Roboflow's SigLIP + UMAP + KMeans) | hsv (no torch needed)
+  siglip_model: google/siglip-base-patch16-224
+  umap_dims: 3
+
+numbers:
+  provider: claude           # claude | none
+  model: claude-haiku-5-5    # any vision-capable Claude model id
+  crops_per_track: 4
+  crop_long_edge: 288        # px; ~100 image tokens per crop
+  images_per_request: 20
+  min_votes: 2               # a number needs this many agreeing reads ...
+  min_share: 0.6             # ... and this share of all readable reads
+  roster: rosters/hfx_ga_2026.csv   # CSV team,number,name: limits numbers to each team's and adds names
+
+kalman:
+  accel_std: 12.0            # ft/s^2, process noise
+  meas_std: 2.0              # ft, homography + foot-point error
+  gate_chi2: 9.21            # 99% for 2 dof; measurements beyond this are treated as outliers
+  max_gap_s: 1.5             # fill gaps up to this long with the smoother; longer gaps split a trajectory
+  max_speed_fps: 30.0        # ft/s cap when reporting speeds
+
+homography:
+  max_interp_gap_s: 0.7      # interpolate floor homographies between registered frames this close
+
+ball:
+  fps: 30                    # ball detection/tracking rate, decoded at full source resolution (the ball is 4-10 px)
+  detector: rfdetr           # rfdetr (fine-tuned weights below) | sam3 (zero-shot, GPU, slow) | motion (camera-compensated
+                             # frame differencing; for CPU development and for pre-labelling)
+  weights: models/ball_rfdetr/checkpoint_best_total.pth
+  rfdetr_size: medium        # nano | small | medium | large (multiples of 32 for the tile; base needs 56)
+  tile: 640                  # native-resolution tiles the detector sees (training and inference); multiple of 32
+  overlap: 96
+  min_score: 0.30
+  batch_tiles: 16
+  sam3_fps: 10               # sam3 detector: detect on every 3rd frame (the tracker bridges the rest)
+  motion:
+    diff_thresh: 22          # grey-level change after camera-motion compensation
+    min_area: 3              # px at source resolution
+    max_area: 160
+    max_sat: 110             # the NLL ball is pale; jerseys/ads that are saturated are skipped
+    min_val: 140
+    min_turf_ring: 0.35      # share of turf/crease around a candidate (drops crowd, boards, scorebug)
+  track:
+    gate_px: 60              # association radius around the Kalman prediction, at 30 fps
+    max_miss: 6              # frames a tracklet can coast without a detection
+    min_len: 4               # detections a tracklet needs to be kept
+    min_motion_px: 25        # tracklets that never move this far are static clutter (floor dots, logos)
+    min_speed_px_s: {motion: 150, rfdetr: 0, sam3: 0}   # per detector: the motion detector's slow tracklets
+                             # are mostly stick heads and hands, so it keeps only flights
+    fill_gap_s: 0.5          # interpolate the chosen ball path across gaps up to this long
+
+ball_label:
+  frames: 600                # frames sampled across the live shots for labelling
+  min_gap_s: 0.4             # at least this far apart (neighbouring frames teach the model nothing new)
+  prelabel: [motion, sam3]   # proposal sources; sam3 needs a GPU, motion runs anywhere
+  sam3_prompt: "lacrosse ball"
+  box_px: 12                 # default box side for a click-labelled ball (source pixels)
+  negatives_per_image: 1     # extra ball-free tiles per frame (teaches the model what is not a ball)
+  split: [0.8, 0.15, 0.05]   # train / valid / test, split by camera shot so near-identical frames never leak
+
+ball_train:
+  epochs: 80
+  batch_size: 8              # "auto" works on CUDA
+  grad_accum_steps: 2
+  lr: 1.0e-4
+  early_stopping: true
+  output_dir: models/ball_rfdetr
+
+plays:
+  stick_zone: [0.6, 0.45, 0.6]    # holder zone around a player box: sideways (x box width), above the head
+                                  # and down from the top of the box (x box height) - where a stick head can be
+  reach: 0.30                # ball within this many player-heights of the zone = on that stick
+  fast_ball: 6.0             # ball faster than this (player-heights per second, camera-compensated) = in flight
+  min_hold_s: 0.25           # shortest possession by one player
+  max_hidden_s: 2.5          # keep the last holder this long while the ball is hidden in a pocket
+  shot_speed: 9.0            # release speed (player-heights per second) that can be a shot ...
+  shot_cone_deg: 30          # ... when the ball heads within this angle of the goal mouth
+  goal_link_s: 3.0           # a scoreboard goal this soon after a shot makes the shot a goal
+  assist_window_s: 4.0       # a pass this soon before a shot is its assist
+  lane_width_ft: 3.0         # defenders this close to the shooter-to-goal line are "in the lane"
+  pressure_ft: 5.0           # a defender this close to the ball carrier = under pressure
+
+advanced:
+  high_speed_fps: 14.0       # ~9.5 mph
+  sprint_fps: 20.0           # ~13.6 mph
+  min_sprint_s: 0.5
+  accel_fps2: 10.0           # an acceleration effort: above this for >= 0.4 s
+  stint_gap_s: 25.0          # sightings of an identified player closer than this belong to one on-floor stint
+  grid_ft: 2.0               # space-control grid
+  reach_speed_fps: 20.0      # space control: a player reaches a cell in distance / this, after 0.3 s of drift
+  pick:
+    screener_max_speed: 5.0  # ft/s
+    brush_ft: 4.0            # the ball-side teammate passes this close to the screener
+    gain_ft: 3.0             # ... and gains this much separation from his defender within 1 s
+
+render:
+  ball: auto                 # ball dot + trail, holder ring, pass arrows, shot lines: auto = only with a real
+                             # detector (rfdetr / sam3), true = also the motion stand-in, false = never
+  shots: null               # list of shot ids to render; null = the shots with the most floor positions
+  max_shots: 4
+  radar_width: 470
+  radar_alpha: 0.82
+  team_colors: {HFX: "#9b4dff", GA: "#e0a100"}   # outline / tag / dot colours (sRGB hex)
+  watermark: "LacrosseNet"

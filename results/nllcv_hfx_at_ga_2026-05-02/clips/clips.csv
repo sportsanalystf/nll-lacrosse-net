@@ -1,0 +1,11 @@
+goal,file,start,end,team,audio_confirmed
+1,goal_01_P1_13-42_GA_HFX0-GA1.mp4,9.0,27.0,GA,False
+2,goal_02_P1_11-46_GA+HFX_HFX1-GA2.mp4,54.4,72.4,GA+HFX,False
+3,goal_03_P2_14-44_GA_HFX1-GA3.mp4,88.5,106.5,GA,False
+4,goal_04_P2_14-11_GA_HFX1-GA4.mp4,104.5,122.5,GA,False
+5,goal_05_P2_13-16_HFX_HFX2-GA4.mp4,130.3,139.6,HFX,True
+6,goal_06_P2_10-23_HFX_HFX4-GA4.mp4,165.2,183.2,HFX,False
+7,goal_07_P2_2-25_HFX_HFX6-GA4.mp4,175.0,193.0,HFX,False
+8,goal_08_P3_13-59_GA+HFX_HFX9-GA5.mp4,201.0,219.0,GA+HFX,False
+9,goal_09_P3_1-04_GA_HFX9-GA6.mp4,211.1,229.1,GA,False
+10,goal_10_P4_9-22_GA+HFX_HFX11-GA7.mp4,260.0,278.0,GA+HFX,False
